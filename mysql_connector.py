@@ -18,7 +18,7 @@ def connect():
 # Find films by keyword function
 def search_by_keyword(keyword, limit=10,offset=0):
     search_query = """
-            SELECT film_id, title
+            SELECT film_id, title,description
             FROM film
             WHERE title LIKE %s
             ORDER BY title

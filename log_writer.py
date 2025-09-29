@@ -3,10 +3,12 @@ from datetime import datetime
 
 
 class LogWriter:
+    """Save search results/logs to MongoDB database"""
+
     def __init__(self):
         self.mongo = MongoConnector()
 
-    def search_log(self, search_type: str, params: dict,results_count: int):
+    def search_log(self, search_type: str, params: dict,results_count: int, other_info: str = ""):
         """
         Save search results to MongoDB
 
@@ -21,5 +23,6 @@ class LogWriter:
             "search_type": search_type,
             "params": params,
             "result": results_count,
+            "other_info": other_info
         }
         self.mongo.save_log(log_entry)

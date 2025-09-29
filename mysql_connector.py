@@ -5,22 +5,28 @@ import pymysql
 
 dotenv.load_dotenv(Path('.env'))
 
-# New class for cleaner Database access
-# Connection to database
 class SQLConnector:
+    """ Class created to handle connection and queries to MySQL database"""
     def __init__(self):
-        self.dbconfig = {'host': os.environ.get('host'),
-            'user': os.environ.get('user'),
-            'password': os.environ.get('password'),
-            'database': os.environ.get('db_sql')
+        self.dbconfig = {'host': os.environ.get('HOST'),
+            'user': os.environ.get('USER'),
+            'password': os.environ.get('PASSWORD'),
+            'database': os.environ.get('DB_SQL')
         }
 
-# Create and return connection to MySql
     def connect(self):
+        """ Connects to MySQL database"""
         return pymysql.connect(**self.dbconfig)
 
-# Find films by keyword function
+    def cursor_execute(self, query, params=None, fetch_one=False):
+        """ Executes query and returns results"""
+        with self.connect() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, params)
+                return cursor.fetchone() if fetch_one else cursor.fetchall()
+
     def search_by_keyword(self, keyword, limit=10,offset=0):
+        """Returns films when searching by keyword"""
         search_query = """
                 SELECT film_id, title,description
                 FROM film
@@ -28,42 +34,30 @@ class SQLConnector:
                 ORDER BY title
                 LIMIT %s OFFSET %s;
         """
-
-        with self.connect() as conn:
-            cursor = conn.cursor()
-            cursor.execute(search_query, (f"%{keyword}%",limit,offset))
-            return cursor.fetchall()
+        return self.cursor_execute(search_query,(f"%{keyword}%", limit, offset))
 
 
-    # Get list of all available genres
     def genre_list(self):
+        """ Show list of all genres"""
         genre_query = """
                 SELECT category_id, name
                 FROM category
                 ORDER BY name;
         """
-
-        with self.connect() as conn:
-            cursor = conn.cursor()
-            cursor.execute(genre_query)
-            return cursor.fetchall()
+        return self.cursor_execute(genre_query)
 
 
-    # Get min. and max. release year range from films
     def year_range(self):
+        """Returns minimum and maximum release year range"""
         year_query = """
                 SELECT MIN(release_year) AS min_year, MAX(release_year) AS max_year
                 FROM film;
         """
-
-        with self.connect() as conn:
-            cursor = conn.cursor()
-            cursor.execute(year_query)
-            return cursor.fetchone()
+        return self.cursor_execute(year_query, fetch_one=True)
 
 
-    # Find films by genre and release year range
     def search_by_genre_year(self, category_id, min_year, max_year, limit=10, offset=0):
+        """Returns films when searching by genre or release year"""
         genre_year_query = """
                 SELECT f.film_id, f.title, f.release_year, f.description
                 FROM film f
@@ -74,7 +68,4 @@ class SQLConnector:
                 LIMIT %s OFFSET %s;
         """
 
-        with self.connect() as conn:
-            cursor = conn.cursor()
-            cursor.execute(genre_year_query, (category_id,min_year, max_year,limit,offset))
-            return cursor.fetchall()
+        return self.cursor_execute(genre_year_query, (category_id,min_year, max_year,limit,offset))

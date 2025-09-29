@@ -4,6 +4,20 @@ class Formatter:
     def __init__(self):
         self.db = SQLConnector()
 
+
+    def show_more(self,limit,offset):
+        """
+
+        Ask user if they want see next page of results
+        Returns updated offset if user confirm, in other case None
+        """
+        count=input("Show next 10 films? (y/n): ").lower()
+        if count == "y":
+            return offset + limit
+        else:
+            return None
+
+
 #   Function to search films by a keyword entered by user
 #   Prints  film ID, title, and description
     def search_films_keyword(self):
@@ -31,10 +45,10 @@ class Formatter:
                 break
 
 #           //Ask user if he wants to see 10 next results
-            count = input("Show next 10 films? (y/n): ").lower()
-            if count != "y":
+            sh_more = self.show_more(limit, offset)
+            if sh_more is None:
                 break
-            offset += limit
+            offset = sh_more
 
 
 #        //Function that shows available genres
@@ -97,7 +111,7 @@ class Formatter:
                 break
 
 #           //Ask user if he wants to see 10 next results
-            count = input("Show next 10 films? (y/n): ").lower()
-            if count != "y":
+            sh_more = self.show_more(limit, offset)
+            if sh_more is None:
                 break
-            offset += limit
+            offset = sh_more

@@ -18,13 +18,13 @@ class Formatter:
         else:
             return None
 
-    def log_search(self, search_type: str, params: dict, results, other_info: str = ""):
+    def log_search(self, search_type: str, params: dict, results, more_info: str = ""):
         """ Function to log search results to database with optional info """
         self.log.search_log(
             search_type=search_type,
             params=params,
-            results_count=len(results),
-            other_info=other_info
+            films_found=len(results),
+            more_info=more_info
         )
 
 
@@ -50,7 +50,7 @@ class Formatter:
                 film_id, title, description = film
                 print(f"# {film_id} | {title}\nDescription:\n{description}\n" + "-" * 70)
 
-            self.log_search("keyword", {"keyword": keyword}, films)
+            self.log_search("keyword", {"keyword": keyword}, films, more_info=f"{keyword}")
 
             if len(films) < limit:
                 break
@@ -123,9 +123,9 @@ class Formatter:
 
             self.log.search_log(
                 search_type="genre",
-                params={"category_id": category_id, "min_year": min_year, "max_year": maximal_year},
-                results_count=len(films),
-                other_info=f"{genre_name}, Years {min_year}-{max_year}"
+                params={"category_id": category_id, "min_year": min_year, "max_year": max_year},
+                films_found=len(films),
+                more_info=f"{genre_name} , year range: {min_year} - {max_year}"
             )
 
             if len(films) < limit:

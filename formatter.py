@@ -125,7 +125,7 @@ class Formatter:
                 search_type="genre",
                 params={"category_id": category_id, "min_year": min_year, "max_year": max_year},
                 films_found=len(films),
-                more_info=f"{genre_name} , year range: {min_year} - {max_year}"
+                more_info=f"{genre_name} | Year range: {min_year} - {max_year}"
             )
 
             if len(films) < limit:

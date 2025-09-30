@@ -14,8 +14,8 @@ class LogWriter:
 
         :param search_type:
         :param params: Dictionary of used search parameters
-        :param results_count: Number of search results returned by search
-        :return: None
+        :param films_found: Number of search results returned by search
+        :param more_info: user-friendly extra info ("Action | 1990 - 2025")
         """
 
         log_entry = {

@@ -8,7 +8,7 @@ class LogWriter:
     def __init__(self):
         self.mongo = MongoConnector()
 
-    def search_log(self, search_type: str, params: dict,results_count: int, other_info: str = ""):
+    def search_log(self, search_type: str, params: dict, films_found: int, more_info: str = ""):
         """
         Save search results to MongoDB
 
@@ -22,7 +22,7 @@ class LogWriter:
             "timestamp": datetime.now(),
             "search_type": search_type,
             "params": params,
-            "result": results_count,
-            "other_info": other_info
+            "films_found": films_found,
+            "more_info": more_info
         }
         self.mongo.save_log(log_entry)

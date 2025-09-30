@@ -1,5 +1,4 @@
 from mongo_connector import MongoConnector
-from datetime import datetime
 
 
 class LogStats:
@@ -19,14 +18,15 @@ class LogStats:
 
         mongo_query = [
             {"$group": {
-                "_id": {"search_type": "$search_type", "params": "$params", "other_info": "$other_info"},
-                "results_count": {"$sum": "$result"},
+                "_id": {"search_type": "$search_type", "params": "$params", "more_info": "$more_info"},
+                "films_found": {"$sum": "$films_found"},
                 "latest": {"$max": "$timestamp"}
             }},
             {"$sort": {"results_count": -1, "latest": -1}},
             {"$limit": limit}
         ]
         return list(self.collection.aggregate(mongo_query))
+
 
     def last_queries(self, limit=5):
         """
@@ -47,22 +47,22 @@ class LogStats:
             if "_id" in query and isinstance(query["_id"], dict):
                 search_type = query["_id"].get("search_type", "Unknown")
                 params = query["_id"].get("params", {})
-                more_info = query["_id"].get("other_info", "")
-                count = query.get("results_count", 1)
+                more_info = query["_id"].get("more_info", "")
+                count = query.get("films_found", 1)
                 latest = query.get("latest")
             else:
                 search_type = query.get("search_type", "Unknown")
                 params = query.get("params", {})
-                more_info = query.get("other_info", "")
-                count = query.get("result", 1)
+                more_info = query.get("more_info", "")
+                count = query.get("films_found", 1)
                 latest = query.get("timestamp")
 
-            latest_str = latest.strftime("%Y-%m-%d %H:%M") if latest else "N/A"
+            time_str = latest.strftime("%Y-%m-%d %H:%M") if latest else "None"
 
             if search_type.lower() == "keyword":
-                print(f"Keyword search: {params.get('keyword')} | Results: {count} | Latest: {latest_str}")
+                print(f"Keyword search: {params.get('keyword')} | Results: {count} | Time: {time_str}")
             elif search_type.lower() == "genre":
                 info = more_info or f"Category {params.get('category_id', '')}, Years {params.get('min_year', '')}-{params.get('max_year', '')}"
-                print(f"Genre search: {info} | Results: {count} | Latest: {latest_str}")
+                print(f"Genre search: {info} | Results: {count} | Time: {time_str}")
             else:
-                print(f"{search_type} search: {params} | Results: {count} | Latest: {latest_str}")
+                print(f"{search_type} search: {params} | Results: {count} | Time: {time_str}")
